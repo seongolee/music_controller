@@ -1,3 +1,4 @@
+# server
 .idea/*
 
 *.log
@@ -18,3 +19,28 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+
+# frontend
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/music_frontend/node_modules
+/music_frontend/.pnp
+/music_frontend/.pnp.js
+
+# testing
+/music_frontend/coverage
+
+# production
+/music_frontend//build
+
+# misc
+music_frontend/.DS_Store
+music_frontend/.env.local
+music_frontend/.env.development.local
+music_frontend/.env.test.local
+music_frontend/.env.production.local
+
+music_frontend/npm-debug.log*
+music_frontend/yarn-debug.log*
+music_frontend/yarn-error.log*
