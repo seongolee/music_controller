@@ -20,7 +20,7 @@ def generate_unique_code() -> string:
 # Create your models here.
 class Room(models.Model):
     # 방 번호
-    code = models.CharField(max_length=8, default="", unique=True)
+    code = models.CharField(max_length=8, default=generate_unique_code, unique=True)
     # 방의 호스트
     host = models.CharField(max_length=50, unique=True)
     # 게스트가 음악을 정지하거나 실행
