@@ -44,5 +44,5 @@ class CreateRoomView(APIView):
                 room.save()
                 room_status = status.HTTP_201_CREATED
 
-            # 생성된 정보, 생성 성공 응답 코드인 201 을 반환
+            # 생성된 정보 반환
             return Response(RoomSerializer(room).data, status=room_status)
