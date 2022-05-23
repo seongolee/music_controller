@@ -9,7 +9,7 @@ import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import { Link } from "react-router-dom";
-
+import axios from "axios";
 
 const CreateRoomPage = () => {
     const defaultVotes = 2;
@@ -25,16 +25,24 @@ const CreateRoomPage = () => {
         setGuestCanPause(e.target.value)
     }
 
-    const handleRoomButtonPressed = () => {
-        const requestOptions = {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-                votesToSkip: votesToSkip,
-                guestCanPause: guestCanPause
-            })
+    const handleRoomButtonPressed = async () => {
+        try {
+            const response = await axios.post('http://localhost:8000/api/create-room', {
+                votes_to_skip: votesToSkip,
+                guest_can_pause: guestCanPause
+            });
+            console.log(response.data)
+        } catch (e) {
+            console.error(e);
         }
-        fetch()
+        // const requestOptions = {
+        //     method: 'POST',
+        //     headers: {'Content-Type': 'application/json'},
+        //     body: JSON.stringify({
+        //         votesToSkip: votesToSkip,
+        //         guestCanPause: guestCanPause
+        //     })
+        // }
     }
 
 
