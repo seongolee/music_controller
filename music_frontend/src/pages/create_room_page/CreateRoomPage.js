@@ -35,14 +35,6 @@ const CreateRoomPage = () => {
         } catch (e) {
             console.error(e);
         }
-        // const requestOptions = {
-        //     method: 'POST',
-        //     headers: {'Content-Type': 'application/json'},
-        //     body: JSON.stringify({
-        //         votesToSkip: votesToSkip,
-        //         guestCanPause: guestCanPause
-        //     })
-        // }
     }
 
 
