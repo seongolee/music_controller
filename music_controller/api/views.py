@@ -37,7 +37,7 @@ class GetRoom(APIView):
 class JoinRoom(APIView):
     lookup_url_kwarg = 'code'
 
-    def post(self, request):
+    def post(self, request, format=None):
         # 세션을 가지고있는지 체크
         if not self.request.session.exists(self.request.session.session_key):
             # 세션을 만듬

@@ -6,25 +6,28 @@ import axios from "axios";
 const RoomJoinPage = () => {
     const navigate = useNavigate();
 
-    const [roomCode, setRoomCode] = useState('');
+    const [inputRoomCode, setInputRoomCode] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
-    const isError = useRef(false);
+    const [isError, setIsError] = useState(false);
+    const roomCode = useRef('')
 
     const handleTextFieldChange = (e) => {
-        setRoomCode(e.target.value)
+        setInputRoomCode(e.target.value);
     }
 
     const roomButtonPressed = async () => {
         try{
             const response = await axios.post('/api/join-room', {
-                'code': roomCode
+                'code': inputRoomCode
             }, {
                 withCredentials: true
             });
-            navigate("/room/" + roomCode);
+            navigate("/room/" + inputRoomCode);
         } catch(e) {
-            isError.current = true
+            console.error(e)
             setErrorMessage(e.response.data["Bad Request"]);
+            setIsError(true);
+            roomCode.current.focus();
         }
     }
 
@@ -37,10 +40,11 @@ const RoomJoinPage = () => {
             </Grid>
             <Grid item xs={12} align="center">
                 <TextField
-                    error={isError.current}
+                    error={isError}
+                    inputRef={roomCode}
                     label="Code"
                     placeholder="Enter a Room Code"
-                    value={roomCode}
+                    value={inputRoomCode}
                     helperText={errorMessage}
                     variant="outlined"
                     onChange={handleTextFieldChange}
