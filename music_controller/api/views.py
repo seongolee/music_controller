@@ -17,7 +17,9 @@ class GetRoom(APIView):
     lookup_url_kwarg = 'code'
 
     def get(self, request, format=None):
-        code = request.Get.get(self.lookup_url_kwarg)
+        # request.GET[] 데이터가 없을 경우 오류를 발생,
+        # request.GET.get() 은 데이터가 없을 경우 None 을 반환해준다. / get('code', defaultValue)
+        code = request.GET.get(self.lookup_url_kwarg)
         if code is not None:
             # code 에 맞는 방이 있는지 확인
             room = Room.objects.filter(code=code)
@@ -29,8 +31,6 @@ class GetRoom(APIView):
             return Response({'Room Not Found': 'Invalid Room Code.'}, status=status.HTTP_404_NOT_FOUND)
 
         return Response({'Bad Request': 'Code parameter not found in request'}, status=status.HTTP_400_BAD_REQUEST)
-
-
 
 
 # 방 생성
@@ -65,5 +65,8 @@ class CreateRoomView(APIView):
                 room.save()
                 room_status = status.HTTP_201_CREATED
 
+            data = RoomSerializer(room).data
+            data['is_host'] = True
+
             # 생성된 정보 반환
-            return Response(RoomSerializer(room).data, status=room_status)
+            return Response(data, status=room_status)
