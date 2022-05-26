@@ -33,6 +33,32 @@ class GetRoom(APIView):
         return Response({'Bad Request': 'Code parameter not found in request'}, status=status.HTTP_400_BAD_REQUEST)
 
 
+# 방 참가
+class JoinRoom(APIView):
+    lookup_url_kwarg = 'code'
+
+    def post(self, request):
+        # 세션을 가지고있는지 체크
+        if not self.request.session.exists(self.request.session.session_key):
+            # 세션을 만듬
+            self.request.session.create()
+
+        # post 방식 이기때문에 request.data.get
+        code = request.data.get(self.lookup_url_kwarg)
+        if code != '':
+            room_result = Room.objects.filter(code=code)
+            # 현재 참여하고있는 방 위치를 위해 저장
+            self.request.session['room_code'] = code
+            if room_result:
+                return Response({'message': 'Room Joined!'}, status=status.HTTP_200_OK)
+            else:
+                return Response({'Bad Request': 'Invalid Room Code'},
+                                status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({'Bad Request': 'Invalid post data, did not find a code key'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+
 # 방 생성
 class CreateRoomView(APIView):
     serializer_class = CreateRoomSerializer
@@ -53,6 +79,7 @@ class CreateRoomView(APIView):
             host = self.request.session.session_key
             queryset = Room.objects.filter(host=host)
 
+            room = None
             # 방이 있는지 체크, if: 업데이트, else: 방생성
             if queryset.exists():
                 room = queryset[0]
@@ -65,6 +92,7 @@ class CreateRoomView(APIView):
                 room.save()
                 room_status = status.HTTP_201_CREATED
 
+            self.request.session['room_code'] = room.code
             data = RoomSerializer(room).data
             data['is_host'] = True
 

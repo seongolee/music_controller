@@ -34,9 +34,7 @@ const CreateRoomPage = () => {
                 votes_to_skip: votesToSkip,
                 guest_can_pause: guestCanPause
             }, { withCredentials: true});
-            navigate("/room/" + response.data.code, {
-                state: response.data
-            });
+            navigate("/room/" + response.data.code);
         } catch (e) {
             console.error(e);
         }
