@@ -61,6 +61,8 @@ CORS_ORIGIN_WHITELIST = (
     'http://localhost:3000',
 )
 
+# credentials 허용
+CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = 'music_controller.urls'
 

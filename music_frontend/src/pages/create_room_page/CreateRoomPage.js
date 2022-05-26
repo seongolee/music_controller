@@ -8,7 +8,7 @@ import FormControl from "@material-ui/core/FormControl";
 import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const CreateRoomPage = () => {
@@ -16,6 +16,9 @@ const CreateRoomPage = () => {
 
     const [votesToSkip, setVotesToSkip] = useState(defaultVotes);
     const [guestCanPause, setGuestCanPause] = useState('true');
+
+    // 이동할 페이지로 값을 넘길때 사용
+    const navigate = useNavigate();
 
     const handleVotesChange = (e) => {
         setVotesToSkip(e.target.value);
@@ -27,11 +30,13 @@ const CreateRoomPage = () => {
 
     const handleRoomButtonPressed = async () => {
         try {
-            const response = await axios.post('http://localhost:8000/api/create-room', {
+            const response = await axios.post('/api/create-room', {
                 votes_to_skip: votesToSkip,
                 guest_can_pause: guestCanPause
+            }, { withCredentials: true});
+            navigate("/room/" + response.data.code, {
+                state: response.data
             });
-            console.log(response.data)
         } catch (e) {
             console.error(e);
         }
