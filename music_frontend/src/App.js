@@ -6,7 +6,7 @@ function App() {
     return (
         <Router>
             <Routes>
-                <Route path="/" element={<p>This is a home page</p>} />
+                <Route path="/" element={<HomePage />} />
                 <Route path="/join" element={<RoomJoinPage/>} />
                 <Route path="/create" element={<CreateRoomPage/>} />
                 <Route path="/room/:roomCode" element={<Room/>} />
