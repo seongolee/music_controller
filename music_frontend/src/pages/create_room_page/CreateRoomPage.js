@@ -1,31 +1,25 @@
-import React, { useState, useEffect } from "react";
-import Button from "@material-ui/core/Button";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography"
-import TextField from "@material-ui/core/TextField";
-import FormHelperText from "@material-ui/core/FormHelperText";
-import FormControl from "@material-ui/core/FormControl";
-import Radio from "@material-ui/core/Radio";
-import RadioGroup from "@material-ui/core/RadioGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import { Link, useNavigate } from "react-router-dom";
+import React, {useState, useRef} from "react";
+import {Button, Grid, Typography, TextField, FormHelperText} from "@material-ui/core";
+import {FormControl, Radio, RadioGroup, FormControlLabel, Collapse} from "@material-ui/core";
+import {Link, useNavigate} from "react-router-dom";
 import axios from "axios";
 
-const CreateRoomPage = () => {
-    const defaultVotes = 2;
+const CreateRoomPage = (props) => {
+    const [votesToSkip, setVotesToSkip] = useState(props.votesToSkip | 2);
+    const [guestCanPause, setGuestCanPause] = useState(typeof props.guestCanPause === "undefined" ? "true" : props.guestCanPause.toString());
+    const [message, setMessage] = useState("");
 
-    const [votesToSkip, setVotesToSkip] = useState(defaultVotes);
-    const [guestCanPause, setGuestCanPause] = useState('true');
+    const title = props.update ? "Update Room" : "Create a Room";
 
     // 이동할 페이지로 값을 넘길때 사용
     const navigate = useNavigate();
-
+    
     const handleVotesChange = (e) => {
         setVotesToSkip(e.target.value);
     }
 
     const handleGuestCanPauseChange = (e) => {
-        setGuestCanPause(e.target.value)
+        setGuestCanPause(e.target.value);
     }
 
     const handleRoomButtonPressed = async () => {
@@ -33,20 +27,64 @@ const CreateRoomPage = () => {
             const response = await axios.post('/api/create-room', {
                 votes_to_skip: votesToSkip,
                 guest_can_pause: guestCanPause
-            }, { withCredentials: true});
+            }, {withCredentials: true});
             navigate("/room/" + response.data.code);
         } catch (e) {
             console.error(e);
         }
     }
 
+    const handleUpdateButtonPressed = async () => {
+        try {
+            const response = await axios.patch('/api/update-room', {
+                votes_to_skip: votesToSkip,
+                guest_can_pause: guestCanPause,
+                code: props.roomCode
+            }, {withCredentials: true});
+            setMessage(response.data.msg);
+        } catch (e) {
+            setMessage(e.response.data.msg);
+        }
+    }
+
+    const renderCreateButtons = () => {
+        return (
+            <>
+                <Grid item xs={12} align="center">
+                    <Button color="primary" variant="contained" onClick={handleRoomButtonPressed}>
+                        Create A Room
+                    </Button>
+                </Grid>
+                <Grid item xs={12} align="center">
+                    <Button color="secondary" variant="contained" to="/" component={Link}>
+                        Back
+                    </Button>
+                </Grid>
+            </>
+        );
+    }
+
+    const renderUpdateButtons = () => {
+        return (
+            <Grid item xs={12} align="center">
+                <Button color="primary" variant="contained" onClick={handleUpdateButtonPressed}>
+                    Update Room
+                </Button>
+            </Grid>
+        );
+    }
 
 
     return (
-        <Grid container spacing={1} defaultValue={false} style={{display: "block"}}>
+        <Grid container spacing={1} style={{display: "block"}}>
+            <Grid item xs={12} align="center">
+                <Collapse in={message !== ""}>
+                    {message}
+                </Collapse>
+            </Grid>
             <Grid item xs={12} align="center">
                 <Typography component="h4" variant="h4">
-                    Create A Room
+                    {title}
                 </Typography>
             </Grid>
             <Grid item xs={12} align="center">
@@ -54,15 +92,15 @@ const CreateRoomPage = () => {
                     <FormHelperText style={{textAlign: "center"}}>
                         Guest Control of Playback State
                     </FormHelperText>
-                    <RadioGroup row defaultValue="true" onChange={handleGuestCanPauseChange}>
+                    <RadioGroup row value={guestCanPause} onChange={handleGuestCanPauseChange}>
                         <FormControlLabel
-                            control={<Radio color="primary" />}
+                            control={<Radio color="primary"/>}
                             label="Play/Pause"
                             labelplacement="bottom"
                             value="true"
                         />
                         <FormControlLabel
-                            control={<Radio color="secondary" />}
+                            control={<Radio color="secondary"/>}
                             label="No Control"
                             labelplacement="bottom"
                             value="false"
@@ -76,7 +114,7 @@ const CreateRoomPage = () => {
                         required={true}
                         type="number"
                         onChange={handleVotesChange}
-                        defaultValue={defaultVotes}
+                        defaultValue={votesToSkip}
                         inputProps={{
                             min: 1,
                             style: {textAlign: "center"}
@@ -87,16 +125,7 @@ const CreateRoomPage = () => {
                     </FormHelperText>
                 </FormControl>
             </Grid>
-            <Grid item xs={12} align="center">
-                <Button color="primary" variant="contained" onClick={handleRoomButtonPressed}>
-                    Create A Room
-                </Button>
-            </Grid>
-            <Grid item xs={12} align="center">
-                <Button color="secondary" variant="contained" to="/" component={ Link }>
-                    Back
-                </Button>
-            </Grid>
+            {props.update ? renderUpdateButtons() : renderCreateButtons()}
         </Grid>
     );
 }
