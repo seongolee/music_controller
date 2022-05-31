@@ -1,19 +1,29 @@
-import React, {useState, useRef} from "react";
+import React, {useState, useRef, useEffect} from "react";
 import {Button, Grid, Typography, TextField, FormHelperText} from "@material-ui/core";
 import {FormControl, Radio, RadioGroup, FormControlLabel, Collapse} from "@material-ui/core";
 import {Link, useNavigate} from "react-router-dom";
 import axios from "axios";
+import {Alert} from "@material-ui/lab";
 
 const CreateRoomPage = (props) => {
     const [votesToSkip, setVotesToSkip] = useState(props.votesToSkip | 2);
+    // props.guestCanPause === undefined, typeof props.guestCanPause === "undefined" 같은 결과
     const [guestCanPause, setGuestCanPause] = useState(typeof props.guestCanPause === "undefined" ? "true" : props.guestCanPause.toString());
-    const [message, setMessage] = useState("");
+    const [successMsg, setSuccessMsg] = useState("");
+    const [errorMsg, setErrorMsg] = useState("");
 
     const title = props.update ? "Update Room" : "Create a Room";
 
     // 이동할 페이지로 값을 넘길때 사용
     const navigate = useNavigate();
-    
+
+    useEffect(() => {
+        console.log('check')
+        if (successMsg !== "") {
+            props.updateCallback();
+        }
+    }, [successMsg]);
+
     const handleVotesChange = (e) => {
         setVotesToSkip(e.target.value);
     }
@@ -41,9 +51,9 @@ const CreateRoomPage = (props) => {
                 guest_can_pause: guestCanPause,
                 code: props.roomCode
             }, {withCredentials: true});
-            setMessage(response.data.msg);
+            setSuccessMsg(response.data.successMsg);
         } catch (e) {
-            setMessage(e.response.data.msg);
+            setErrorMsg(e.response.data.errorMsg);
         }
     }
 
@@ -78,8 +88,18 @@ const CreateRoomPage = (props) => {
     return (
         <Grid container spacing={1} style={{display: "block"}}>
             <Grid item xs={12} align="center">
-                <Collapse in={message !== ""}>
-                    {message}
+                <Collapse in={successMsg !== "" || errorMsg !== ""}>
+                    {/*{successMsg !== "" ? (*/}
+                    {/*    <Alert*/}
+                    {/*        severity="success"*/}
+                    {/*        onClose={setSuccessMsg("")}*/}
+                    {/*    >{successMsg}</Alert>*/}
+                    {/*) : (*/}
+                    {/*    <Alert*/}
+                    {/*        severity="error"*/}
+                    {/*        onClose={setErrorMsg("")}*/}
+                    {/*    >{errorMsg}</Alert>)*/}
+                    {/*}*/}
                 </Collapse>
             </Grid>
             <Grid item xs={12} align="center">

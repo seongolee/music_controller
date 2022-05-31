@@ -1,4 +1,4 @@
-import React, {useState, useLayoutEffect} from "react";
+import React, {useState, useEffect} from "react";
 import {useParams, useLocation, useNavigate} from "react-router-dom";
 import axios from "axios";
 import {Grid, Button, Typography} from "@material-ui/core";
@@ -53,7 +53,7 @@ const Room = () => {
         );
     }
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         getRoomDetails();
     }, []);
 
@@ -66,8 +66,7 @@ const Room = () => {
                         votesToSkip={votesToSkip}
                         guestCanPause={guestCanPause}
                         roomCode={roomCode}
-                        updateCallback={() => {
-                        }}
+                        updateCallback={getRoomDetails}
                     >
                     </CreateRoomPage>
                 </Grid>

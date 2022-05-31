@@ -126,7 +126,7 @@ class LeaveRoom(APIView):
         return Response({'Message': 'Success'}, status=status.HTTP_200_OK)
 
 
-#
+# 방 정보 업데이트
 class UpdateRoom(APIView):
     serializer_class = UpdateRoomSerializer
 
@@ -144,19 +144,19 @@ class UpdateRoom(APIView):
 
             # 방을 찾기 못함
             if not queryset.exists():
-                return Response({'msg': 'Room not found.'}, status=status.HTTP_404_NOT_FOUND)
+                return Response({'errorMsg': 'Room not found.'}, status=status.HTTP_404_NOT_FOUND)
             else:
                 room = queryset[0]
                 user_id = self.request.session.session_key
                 if room.host != user_id:
-                    return Response({'msg': 'You are not the host of this room.'}, status=status.HTTP_403_FORBIDDEN)
+                    return Response({'errorMsg': 'You are not the host of this room.'}, status=status.HTTP_403_FORBIDDEN)
                 else:
                     room.guest_can_pause = guest_can_pause
                     room.votes_to_skip = votes_to_skip
                     room.save(update_fields=['guest_can_pause', 'votes_to_skip'])
                     data = RoomSerializer(room).data
-                    data["msg"] = "Room updated successfully!"
+                    data["successMsg"] = "Room updated successfully!"
                     return Response(data, status=status.HTTP_200_OK)
 
         # 유효하지 않은 데이터
-        return Response({'msg': "Invalid Data..."}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'errorMsg': "Invalid Data..."}, status=status.HTTP_400_BAD_REQUEST)
